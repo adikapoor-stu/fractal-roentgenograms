@@ -137,11 +137,11 @@ def process_folder(input_folder, output_csv, condition):
 
 # Process healthy images
 process_folder(healthy_train_folder, "healthy-train_results.csv", 0)
-print("Healthy training data processing complete")
+print("Healthy training data processing complete.")
 
 # Process unhealthy images
 process_folder(unhealthy_train_folder, "unhealthy-train_results.csv", 1)
-print("Unhealthy training data processing complete")
+print("Unhealthy training data processing complete.")
 
 # Merge healthy and unhealthy training data
 healthy_train = pd.read_csv("healthy-train_results.csv")
@@ -153,7 +153,7 @@ print("Merging of healthy and unhealthy training data complete")
 # Make the model
 print("Open file ___ to create model")
 
-# Make Model
+# Definition to Make Model
 def train_model():
     # Train model using all-train_results.csv
     data = pd.read_csv("all-train_results.csv")
@@ -178,6 +178,8 @@ def train_model():
     with open("fractal_model.pkl", "wb") as f:
         pk.dump(model, f)
     print("Model saved as fractal_model.pkl")
+
+# Make Model
 train_model()
 
 # Test All Images
@@ -186,11 +188,11 @@ def testImage(image_path):
     with open("fractal_model.pkl", "rb") as f:
         model = pk.load(f)
 
-    # Example test data (replace with actual image metrics)
+    # Get data for test image
     test_data = pd.DataFrame({
-        "fractal_dimension": [1.5],
-        "lacunarity": [0.3],
-        "succolarity": [0.2]
+        "fractal_dimension": [get_fractal_dimension(image_path)],
+        "lacunarity": [get_lacunarity(image_path)],
+        "succolarity": [get_succolarity(image_path)]
     })
 
     # Predict condition
@@ -199,6 +201,8 @@ def testImage(image_path):
         return 1 # Unhealthy
     else:
         return 0 # Healthy
-for 
+
+# Iterate through all files in test-images
+
 
 # End of process_training_images.py
