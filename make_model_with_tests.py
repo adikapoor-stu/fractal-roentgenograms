@@ -1,5 +1,9 @@
+# Paths to training images folders
 healthy_train_folder = "C:/Users/m_lkn/OneDrive/Desktop/fractal-test/healthy_train"
 unhealthy_train_folder = "C:/Users/m_lkn/OneDrive/Desktop/fractal-test/unhealthy_train"
+
+# Path to test images folder
+test_images_folder = "C:/Users/m_lkn/OneDrive/Desktop/fractal-test/test_images"
 
 # Allowed image formats
 valid_exts = (".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp")
@@ -182,27 +186,44 @@ def train_model():
 # Make Model
 train_model()
 
-# Test All Images
-def testImage(image_path):
+# Iterate through all files in test-images
+def process_test_folder(test_folder, output_csv):
+    header = ["filename", "fractal_dimension", "lacunarity", "succolarity", "prediction"]
+
     # Load model
     with open("fractal_model.pkl", "rb") as f:
         model = pk.load(f)
 
-    # Get data for test image
-    test_data = pd.DataFrame({
-        "fractal_dimension": [get_fractal_dimension(image_path)],
-        "lacunarity": [get_lacunarity(image_path)],
-        "succolarity": [get_succolarity(image_path)]
-    })
+    with open(output_csv, mode="w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
 
-    # Predict condition
-    prediction = model.predict(test_data)
-    if prediction[0] == 1:
-        return 1 # Unhealthy
-    else:
-        return 0 # Healthy
+        for filename in os.listdir(test_folder):
+            if not filename.lower().endswith(valid_exts):
+                continue
+            image_path = os.path.join(test_folder, filename)
+            print(f"Testing {filename}...", end=" ")
+            try:
+                # Calculate metrics for test image
+                fd = get_fractal_dimension(image_path)
+                lac = get_lacunarity(image_path)
+                suc = get_succolarity(image_path)
 
-# Iterate through all files in test-images
+                # Predict condition using model
+                test_df = pd.DataFrame({
+                    "fractal_dimension": [fd],
+                    "lacunarity": [lac],
+                    "succolarity": [suc]
+                })
+                pred = int(model.predict(test_df)[0])
+                writer.writerow([filename, fd, lac, suc, pred])
+                print(f"predicted {pred}")
+            except Exception as e:
+                print(f"error: {e}")
+    
+    print(f"Testing in {test_images_folder} complete, results saved to {output_csv}")
 
+# Call function on your test_images folder
+process_test_folder(test_images_folder, "test_results.csv")
 
 # End of process_training_images.py
