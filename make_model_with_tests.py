@@ -217,13 +217,16 @@ def process_test_folder(test_folder, output_csv):
                 })
                 pred = int(model.predict(test_df)[0])
                 writer.writerow([filename, fd, lac, suc, pred])
-                print(f"predicted {pred}")
+                print(f"complete, predicted {pred}")
+                # 1 is unhealthy, 0 is healthy
             except Exception as e:
                 print(f"error: {e}")
     
-    print(f"Testing in {test_images_folder} complete, results saved to {output_csv}")
+    print(f"Testing in {test_folder} complete, results saved to {output_csv}")
 
-# Call function on your test_images folder
-process_test_folder(test_images_folder, "test_results.csv")
+# Call function on folder with test images
+process_test_folder(test_images_folder, "testing_test_results.csv")
+process_test_folder(healthy_train_folder, "healthy_test_results.csv")
+process_test_folder(unhealthy_train_folder, "unhealthy_test_results.csv")
 
 # End of process_training_images.py
