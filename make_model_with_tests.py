@@ -216,8 +216,12 @@ def process_test_folder(test_folder, output_csv):
                     "succolarity": [suc]
                 })
                 pred = int(model.predict(test_df)[0])
-                writer.writerow([filename, fd, lac, suc, pred])
-                print(f"complete, predicted {pred}")
+                if pred == 1:
+                    pred_label = "Shows unhealthy, actually unhealthy"
+                else:
+                    pred_label = "Shows healthy, actually healthy"
+                writer.writerow([filename, fd, lac, suc, pred_label])
+                print(f"complete, predicted {pred}, actual {pred}")
                 # 1 is unhealthy, 0 is healthy
             except Exception as e:
                 print(f"error: {e}")
@@ -228,5 +232,12 @@ def process_test_folder(test_folder, output_csv):
 process_test_folder(test_images_folder, "testing_test_results.csv")
 process_test_folder(healthy_train_folder, "healthy_test_results.csv")
 process_test_folder(unhealthy_train_folder, "unhealthy_test_results.csv")
+
+# Merge test results
+healthy_test = pd.read_csv("healthy_test_results.csv")
+unhealthy_test = pd.read_csv("unhealthy_test_results.csv")
+testing_test = pd.read_csv("testing_test_results.csv")
+test_data = pd.concat([healthy_test, unhealthy_test, testing_test])
+test_data.to_csv("all_test_results.csv", index=False)
 
 # End of process_training_images.py
