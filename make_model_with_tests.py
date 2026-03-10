@@ -8,8 +8,8 @@ test_images_folder = "C:/Users/m_lkn/OneDrive/Desktop/fractal-test/test_images"
 # Allowed image formats
 valid_exts = (".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp")
 
-import os
 import csv
+import os
 import numpy as np
 from skimage import morphology as morph, io, filters, util
 import pandas as pd
@@ -32,7 +32,7 @@ def get_fractal_dimension(image_path):
         return len(np.where((S > 0) & (S < k * k))[0])
 
     p = int(np.floor(np.log(min(binary.shape)) / np.log(2)))
-    sizes = 2**np.arange(p, 1, -1)
+    sizes = 2 ** np.arange(p, 1, -1)
     
     # Get counts for each size
     counts = []
@@ -108,7 +108,7 @@ def get_succolarity(image_path):
             succolarity_per_scale.append(numerator / denominator)
     
     # Return average succolarity
-    return np.mean(succolarity_per_scale) if succolarity_per_scale else 0.0
+    return np.mean(succolarity_per_scale) if succolarity_per_scale else 0
 
 # Be able to process folders of training images
 def process_folder(input_folder, output_csv, condition):
@@ -138,24 +138,22 @@ def process_folder(input_folder, output_csv, condition):
                     print("complete, moving to next image")
                 except Exception as e:
                     print(f"error processing due to {e}")
+        
 
 # Process healthy images
 process_folder(healthy_train_folder, "healthy-train_results.csv", 0)
 print("Healthy training data processing complete.")
+healthy_train = pd.read_csv("healthy-train_results.csv")
 
 # Process unhealthy images
 process_folder(unhealthy_train_folder, "unhealthy-train_results.csv", 1)
 print("Unhealthy training data processing complete.")
+unhealthy_train = pd.read_csv("unhealthy-train_results.csv")
 
 # Merge healthy and unhealthy training data
-healthy_train = pd.read_csv("healthy-train_results.csv")
-unhealthy_train = pd.read_csv("unhealthy-train_results.csv")
 training_data = pd.concat([healthy_train, unhealthy_train])
 training_data.to_csv("all-train_results.csv", index=False)
 print("Merging of healthy and unhealthy training data complete")
-
-# Make the model
-print("Open file ___ to create model")
 
 # Definition to Make Model
 def train_model():
@@ -184,7 +182,9 @@ def train_model():
     print("Model saved as fractal_model.pkl")
 
 # Make Model
+print("Beginning to create model...", end=" ")
 train_model()
+print("Model creation complete.")
 
 # Iterate through all files in test-images
 def process_test_folder(test_folder, output_csv):
@@ -226,18 +226,17 @@ def process_test_folder(test_folder, output_csv):
             except Exception as e:
                 print(f"error: {e}")
     
+    # Announce end of testing for this folder
     print(f"Testing in {test_folder} complete, results saved to {output_csv}")
 
 # Call function on folder with test images
 process_test_folder(test_images_folder, "testing_test_results.csv")
 process_test_folder(healthy_train_folder, "healthy_test_results.csv")
 process_test_folder(unhealthy_train_folder, "unhealthy_test_results.csv")
+print("Testing of all folders complete, results saved to respective CSV files")
 
 # Merge test results
-healthy_test = pd.read_csv("healthy_test_results.csv")
-unhealthy_test = pd.read_csv("unhealthy_test_results.csv")
 testing_test = pd.read_csv("testing_test_results.csv")
-test_data = pd.concat([healthy_test, unhealthy_test, testing_test])
-test_data.to_csv("all_test_results.csv", index=False)
+print("Testing test results saved to testing_test_results.csv")
 
-# End of process_training_images.py
+# End of code
