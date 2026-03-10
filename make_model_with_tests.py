@@ -9,6 +9,7 @@ test_images_folder = "C:/Users/m_lkn/OneDrive/Desktop/fractal-test/test_images"
 valid_exts = (".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp")
 
 import csv
+from fileinput import filename
 import os
 import numpy as np
 from skimage import morphology as morph, io, filters, util
@@ -186,6 +187,13 @@ print("Beginning to create model...", end=" ")
 train_model()
 print("Model creation complete.")
 
+# Get input CSV file
+input_csv = "C:\\Users\\m_lkn\\OneDrive\\Desktop\\fractal-test\\data\\Data_Entry_2017_v2020.csv"
+
+# Load CSV into a dictionary for lookup in testing phase
+csv_data = pd.read_csv(input_csv)
+label_lookup = dict(zip(csv_data['Image Index'], csv_data['Finding Labels']))
+
 # Iterate through all files in test-images
 def process_test_folder(test_folder, output_csv):
     header = ["filename", "fractal_dimension", "lacunarity", "succolarity", "prediction"]
@@ -215,14 +223,23 @@ def process_test_folder(test_folder, output_csv):
                     "lacunarity": [lac],
                     "succolarity": [suc]
                 })
-                pred = int(model.predict(test_df)[0])
+
+                # Predict using the model
+                pred = model.predict(test_df)[0]
+
+                # Get actual result from CSV lookup
+                label = label_lookup.get(filename, 'No Finding')
+
+                # Add row to output CSV with prediction and actual condition
+                actual = 'healthy' if label == 'No Finding' else 'unhealthy'
                 if pred == 1:
-                    pred_label = "Shows unhealthy, actually unhealthy"
+                    pred_label = "Shows unhealthy, actually " + actual
                 else:
-                    pred_label = "Shows healthy, actually healthy"
+                    pred_label = "Shows healthy, actually " + actual
                 writer.writerow([filename, fd, lac, suc, pred_label])
-                print(f"complete, predicted {pred}, actual {pred}")
+                print(f"complete, predicted {pred}, actual {actual}")
                 # 1 is unhealthy, 0 is healthy
+
             except Exception as e:
                 print(f"error: {e}")
     
