@@ -1,4 +1,4 @@
 This is a science fair project that scans images and finds variations using fractals. 
 
 Images are taken from a free database:
-Obuchowicz, R., Piórkowski, A., Nurzyńska, K., Obuchowicz, B., Strzelecki, M., & Bielecka, M. (2026, January 25). Will AI Replace Physicians in the Near Future? AI Adoption Barriers in Medicine. Department of Diagnostic Imaging, 16(3), 396. https://doi.org/10.3390/diagnostics16030396 
+Xiaosong Wang, Yifan Peng, Le Lu, Zhiyong Lu, Mohammadhadi Bagheri, Ronald M. Summers. ChestX-ray8: Hospital-scale Chest X-ray Database and Benchmarks on Weakly- Supervised Classification and Localization of Common Thorax Diseases, IEEE CVPR, pp. 3462-3471,2017
